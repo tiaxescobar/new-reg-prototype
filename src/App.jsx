@@ -27,23 +27,6 @@ const AvettaRegistrationPrototype = () => {
     addedConnections: [],
   });
 
-  const isStepOneValid = () => {
-      return (
-        formData.companyName.trim() !== '' &&
-        formData.address.trim() !== '' &&
-        formData.firstName.trim() !== '' &&
-        formData.lastName.trim() !== '' &&
-        formData.phoneNumber.trim() !== '' &&
-        formData.jobCategory !== '' &&
-        formData.jobRole.trim() !== '' &&
-        formData.username.trim() !== '' &&
-        formData.password.trim() !== '' &&
-        formData.disclaimer1 &&
-        formData.disclaimer2 &&
-        formData.disclaimer3
-      );
-    };
-  
   const [passwordValidation, setPasswordValidation] = useState({
     length: false,
     uppercase: false,
@@ -100,6 +83,48 @@ const AvettaRegistrationPrototype = () => {
         addedConnections: [...prev.addedConnections, connection]
       }));
     }
+  };
+
+  const isStep3Valid = () => {
+    const allPasswordRequirementsMet = 
+      passwordValidation.length &&
+      passwordValidation.uppercase &&
+      passwordValidation.lowercase &&
+      passwordValidation.number &&
+      passwordValidation.special;
+
+    return (
+      formData.companyName.trim() !== '' &&
+      formData.address.trim() !== '' &&
+      formData.firstName.trim() !== '' &&
+      formData.lastName.trim() !== '' &&
+      formData.phoneNumber.trim() !== '' &&
+      formData.jobCategory !== '' &&
+      formData.jobRole.trim() !== '' &&
+      formData.username.trim() !== '' &&
+      formData.password.trim() !== '' &&
+      allPasswordRequirementsMet &&
+      formData.agreedToTerms &&
+      formData.agreedToPrivacy &&
+      formData.agreedToAutoRenewal
+    );
+  };
+
+  const isStep1Valid = () => {
+    return (
+      formData.companyName.trim() !== '' &&
+      formData.address.trim() !== ''
+    );
+  };
+
+  const isStep2Valid = () => {
+    return (
+      formData.firstName.trim() !== '' &&
+      formData.lastName.trim() !== '' &&
+      formData.phoneNumber.trim() !== '' &&
+      formData.jobCategory !== '' &&
+      formData.jobRole.trim() !== ''
+    );
   };
 
   const renderStepContent = () => {
@@ -260,15 +285,13 @@ const AvettaRegistrationPrototype = () => {
                     <label className="block text-sm font-semibold text-gray-900 mb-2">
                       Address
                     </label>
-                    <select
+                    <input
+                      type="text"
                       value={formData.address}
                       onChange={(e) => handleInputChange('address', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent appearance-none bg-white cursor-pointer"
-                    >
-                      <option value="">Example: 1001 Main St</option>
-                      <option value="100 Business Ave, City, ST 12345">100 Business Ave, City, ST 12345</option>
-                      <option value="200 Corporate Blvd, Town, ST 67890">200 Corporate Blvd, Town, ST 67890</option>
-                    </select>
+                      className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      placeholder="Street, City, State, Zip"
+                    />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -295,7 +318,12 @@ const AvettaRegistrationPrototype = () => {
 
                 <button
                   onClick={handleNext}
-                  className="w-full mt-8 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors cursor-pointer"
+                  disabled={!isStep1Valid()}
+                  className={`w-full mt-8 py-3 rounded font-semibold transition-colors ${
+                    isStep1Valid()
+                      ? 'bg-blue-700 hover:bg-blue-800 text-white cursor-pointer'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Continue
                 </button>
@@ -428,7 +456,12 @@ const AvettaRegistrationPrototype = () => {
 
                 <button
                   onClick={handleNext}
-                  className="w-full mt-8 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors cursor-pointer"
+                  disabled={!isStep2Valid()}
+                  className={`w-full mt-8 py-3 rounded font-semibold transition-colors ${
+                    isStep2Valid()
+                      ? 'bg-blue-700 hover:bg-blue-800 text-white cursor-pointer'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Continue
                 </button>
@@ -457,29 +490,28 @@ const AvettaRegistrationPrototype = () => {
 
                 <div className="bg-gray-50 border border-gray-200 rounded p-4 mb-6">
                   <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="font-semibold">Company Name:</span> {formData.companyName || 'Not provided'}
+                    <div className="font-semibold text-gray-900">
+                      {formData.companyName || 'Not provided'}
                     </div>
                     <div className="text-gray-600">
-                      Address: {formData.address ? formData.address : 'Not provided'}
+                      {formData.address ? formData.address : 'Not provided'}
                       {formData.suiteNumber && `, Suite ${formData.suiteNumber}`}
                       {formData.poBox && `, P.O. Box ${formData.poBox}`}
                     </div>
-                    <div className="font-semibold mt-3">Name</div>
-                    <div className="text-gray-600">
+                    <div className="font-semibold text-gray-900">
                       {formData.firstName} {formData.lastName}
                     </div>
                     <div className="text-gray-600">
-                      Business email: {formData.userEmail || formData.businessEmail || 'Not provided'}
+                      {formData.userEmail || formData.businessEmail || 'Not provided'}
                     </div>
                     <div className="text-gray-600">
-                      Phone number: {formData.phoneNumber || 'Not provided'}
+                      {formData.phoneNumber || 'Not provided'}
                     </div>
                     <div className="text-gray-600">
-                      Job category: {formData.jobCategory || 'Not provided'}
+                      {formData.jobCategory || 'Not provided'}
                     </div>
                     <div className="text-gray-600">
-                      Job role: {formData.jobRole || 'Not provided'}
+                      {formData.jobRole || 'Not provided'}
                     </div>
                   </div>
                 </div>
@@ -594,7 +626,12 @@ const AvettaRegistrationPrototype = () => {
 
                 <button
                   onClick={handleNext}
-                  className="w-full mt-8 py-3 bg-blue-700 hover:bg-blue-800 text-white rounded font-semibold transition-colors cursor-pointer"
+                  disabled={!isStep3Valid()}
+                  className={`w-full mt-8 py-3 rounded font-semibold transition-colors ${
+                    isStep3Valid()
+                      ? 'bg-blue-700 hover:bg-blue-800 text-white cursor-pointer'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
                   Create Account
                 </button>
@@ -731,9 +768,11 @@ const AvettaRegistrationPrototype = () => {
                       })}
                     </div>
 
-                    <button className="mt-6 w-full py-3 border-2 border-blue-600 text-blue-600 rounded font-semibold hover:bg-blue-50 transition-colors cursor-pointer">
-                      Load more
-                    </button>
+                    <div className="mt-6 flex justify-center">
+                      <button className="px-5 py-3 border-2 border-blue-600 text-blue-600 rounded font-semibold hover:bg-blue-50 transition-colors cursor-pointer">
+                        Load more
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -802,7 +841,7 @@ const AvettaRegistrationPrototype = () => {
                     <div className="border-2 border-blue-600 rounded-lg p-4 mb-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <input type="radio" checked className="w-4 h-4 text-blue-600 mr-3 cursor-pointer" />
+                          <input type="radio" checked className="w-4 h-4 text-blue-600 mr-3 cursor-pointer" readOnly />
                           <div>
                             <div className="font-semibold text-gray-900">Credit / Debit Card</div>
                             <div className="text-xs text-gray-600 flex items-center">
