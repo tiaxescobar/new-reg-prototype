@@ -59,12 +59,14 @@ const AvettaRegistrationPrototype = () => {
   const handleNext = () => {
     if (currentStep < 7) {
       setCurrentStep(currentStep + 1);
+      window.scrollTo(0, 0);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      window.scrollTo(0, 0);
     }
   };
 
